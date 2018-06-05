@@ -2,8 +2,8 @@ import React from 'react';
 import DropdownListItem from './DropdownListItem';
 import classnames from 'classnames';
 
-const DropdownList = ({ list, currentTextValue, onSelect, cursor, onChangeCursor, listRef, listItemRef }) => (
-    <div ref={listRef} className="Dropdown-list">
+const DropdownList = ({ list, currentTextValue, onSelect, cursor, onChangeCursor, listRef, listItemRef, isOpen }) => (
+    <div ref={listRef} className={classnames('Dropdown-list', { 'Dropdown-list_open': isOpen })}>
       {
         list.length ? list.map(({ name, id }, i) => (
           <DropdownListItem

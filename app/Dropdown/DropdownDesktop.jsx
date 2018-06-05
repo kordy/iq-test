@@ -28,12 +28,9 @@ class DropdownDesktop extends React.Component {
     if (this.props.options) this.setListPixelSize(this.props.options);
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(prevProps) {
     if (prevProps.options !== this.props.options) {
       this.setListPixelSize(this.props.options);
-    }
-    if (prevState.listPixelSize !== this.state.listPixelSize) {
-      this.setState({ isReverse: this.checkAvailablePlace() });
     }
   }
 
@@ -41,7 +38,7 @@ class DropdownDesktop extends React.Component {
     const div = document.createElement('div');
     div.classList.add('hidden-container');
     let listRef = null;
-    ReactDOM.render(<DropdownList list={list} listRef={node => listRef = node} />, div, () => {
+    ReactDOM.render(<DropdownList isOpen list={list} listRef={node => listRef = node} />, div, () => {
       document.body.appendChild(div);
       this.setState({ listPixelSize: listRef.clientHeight });
       document.body.removeChild(div);
@@ -49,10 +46,8 @@ class DropdownDesktop extends React.Component {
   };
 
   checkAvailablePlace = () => {
-    console.log('checkAvailablePlace')
     const height = this.state.listPixelSize;
     const screenTop = this.containerRef.getBoundingClientRect().bottom + (window.scrollY || window.pageYOffset);
-
     return (window.innerHeight - screenTop) < height;
   };
 
@@ -65,7 +60,6 @@ class DropdownDesktop extends React.Component {
   };
 
   onInputFocus = () => {
-      console.log('onInputFocus')
     clearTimeout(this.closeTimeOut);
     if (!this.state.listShown) {
       const isReverse = this.checkAvailablePlace();
@@ -80,9 +74,7 @@ class DropdownDesktop extends React.Component {
   };
 
   onInputBlur = () => {
-      if (this.state.listShown) {
-          this.closeTimeOut = setTimeout(() => this.closeList(), 100);
-      }
+    this.closeTimeOut = setTimeout(() => this.closeList(), 50);
   };
 
   closeList = () => {
@@ -144,25 +136,28 @@ class DropdownDesktop extends React.Component {
   };
 
   onKeyDown = ({ keyCode }) => {
-    if (keyCode !== 9) {
-      this.inputRef.focus();
-      if (!this.state.listShown) {
-          this.onInputFocus();
-      }
+    if (!this.state.listShown) {
+      this.onInputFocus();
     }
     if (keyCode === 38 || keyCode === 40) {
+      this.containerRef.focus();
       this.updateCursor(keyCode);
     } else if (keyCode === 13) {
       this.onEnter();
+    } else if (keyCode !== 9) {
+      this.inputRef.focus();
     }
   };
 
-  onArrowClick = () => {
+  onArrowClick = (e) => {
     if (!this.state.listShown) {
       this.inputRef.focus();
     } else {
+      this.containerRef.focus();
       this.closeList();
     }
+    e.stopPropagation();
+    e.preventDefault();
   };
 
   getItemRefs = (node, id) => this.listItemsRef[id] = node;
@@ -171,52 +166,51 @@ class DropdownDesktop extends React.Component {
     const { placeholder } = this.props;
     const list = this.state.list;
     return (
-        <React.Fragment>
+      <div
+        className={classnames('Dropdown__wrap', {
+          'Dropdown__wrap_open': this.state.listShown,
+          'Dropdown__wrap_reverse': this.state.listShown && this.state.isReverse
+        })}
+        tabIndex={0}
+        ref={containerRef => this.containerRef = containerRef}
+        onFocus={this.onInputFocus}
+        onBlur={this.onInputBlur}
+        onKeyDown={this.onKeyDown}
+
+      >
+        <label className="Dropdown-input">
           <div
-            className={classnames('Dropdown__wrap', {
-              'Dropdown__wrap_open': this.state.listShown,
-              'Dropdown__wrap_reverse': this.state.listShown && this.state.isReverse
+            className={classnames('Dropdown-input__placeholder', {
+              'Dropdown-input__placeholder_open': this.state.listShown || this.state.inputValue
             })}
-            tabIndex={0}
-            ref={containerRef => this.containerRef = containerRef}
-            onFocus={this.onInputFocus}
-            onBlur={this.onInputBlur}
-            onKeyDown={this.onKeyDown}
-          >
-            <label className="Dropdown-input">
-              <div
-                className = {classnames('Dropdown-input__placeholder', {
-                  'Dropdown-input__placeholder_open': this.state.listShown || this.state.inputValue
-                })}
-              >{placeholder}</div>
-              <input
-                ref={(node) => this.inputRef = node}
-                className="Dropdown-input__input"
-                placeholder={this.props.selectedName}
-                value={this.state.inputValue}
-                onChange={this.onInputChange}
-              />
-            </label>
-            {
-              this.state.listShown &&
-              <DropdownList
-                listRef={(node) => this.listRef = node}
-                listItemRef={this.getItemRefs}
-                currentTextValue={this.state.inputValue}
-                onSelect={this.onSelect}
-                list={list}
-                cursor={this.state.cursor}
-                onChangeCursor={this.onChangeCursor}
-              />
-            }
-          </div>
-          <div
-              className={classnames('Dropdown__arrow', {
-                'Dropdown__arrow_reverse': this.state.listShown && this.state.isReverse
-              })}
-              onClick={this.onArrowClick}
-            />
-        </React.Fragment>
+          >{ placeholder }</div>
+          <input
+            ref={(node) => this.inputRef = node}
+            className="Dropdown-input__input"
+            placeholder={this.props.selectedName}
+            value={this.state.inputValue}
+            onChange={this.onInputChange}
+          />
+        </label>
+        {
+          <DropdownList
+            isOpen={this.state.listShown}
+            listRef={(node) => this.listRef = node}
+            listItemRef={this.getItemRefs}
+            currentTextValue={this.state.inputValue}
+            onSelect={this.onSelect}
+            list={list}
+            cursor={this.state.cursor}
+            onChangeCursor={this.onChangeCursor}
+          />
+        }
+        <div
+          className={classnames('Dropdown__arrow', {
+            'Dropdown__arrow_reverse': this.state.listShown && this.state.isReverse
+          })}
+          onMouseDown={this.onArrowClick}
+        />
+      </div>
     );
   }
 }
