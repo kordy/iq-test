@@ -1,0 +1,113 @@
+$borderColor = #b6b8bf;
+$backgroundColor = #fff;
+$activeColor = #ff8e2d;
+$arrowColor = #82848e;
+
+.Dropdown
+  position relative
+  width 310px
+  &__wrap
+    background $backgroundColor
+    border 1px solid $borderColor
+    border-radius 3px
+    height 50px
+
+    &_open
+      border-radius 3px 3px 0 0
+      border-bottom-width 0
+      &.Dropdown__wrap_reverse
+        border-radius 0 0 3px 3px
+        border-top-width 0
+        border-bottom-width 1px
+  &__arrow
+    position:absolute
+    top 0
+    right 0
+    width 30px
+    bottom 0
+    &:after
+      content ''
+      border 5px solid transparent
+      border-top 6px solid $arrowColor
+      position absolute
+      top 22px
+      right 15px
+    &_reverse &
+      transform rotate(180deg)
+      top 18px
+
+.Dropdown-select
+  &__select
+    width 100%
+    position absolute
+    top 0
+    left 0
+    bottom 0
+    opacity 0
+    z-index 1
+  &__value
+    padding 15px 30px 15px 15px
+    display block
+    line-height: 20px;
+
+.Dropdown-input
+  padding 15px 30px 15px 15px
+  display block
+  position relative
+  box-sizing border-box
+  line-height 20px
+
+  &__placeholder
+    position absolute
+    transition 0.15s transform cubic-bezier(0.0, 0, 0.2, 1) 0ms
+    line-height 20px
+    &:after
+      position absolute
+      top 4px
+      bottom 2px
+      left -5px
+      right -5px
+      content ''
+      background $backgroundColor
+      z-index -1
+
+    &_open
+      transform translate(3px, -26px)
+      .Dropdown__wrap_reverse &
+        transform translate(3px, 26px)
+
+  &__input
+    font-size 13px
+    border 0
+    outline 0
+    display block
+    width 100%
+    overflow hidden
+    text-overflow ellipsis
+
+.Dropdown-list
+  border 1px solid $borderColor
+  background $backgroundColor
+  position absolute
+  border-radius 0 0 3px 3px
+  left 0
+  right 0
+  max-height 300px
+  overflow auto
+  z-index 2
+  .Dropdown__wrap_reverse &
+    border-radius 3px 3px 0 0
+    bottom: 100%
+
+  &__item
+    padding 18px 15px
+    cursor pointer
+    &_empty
+      color: #999
+      cursor default
+    &_active
+      color $activeColor
+  &__highlighted
+    color: $activeColor
+    text-decoration underline
+
