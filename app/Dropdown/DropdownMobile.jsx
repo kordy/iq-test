@@ -1,5 +1,6 @@
 import React from 'react';
 import classnames from 'classnames';
+import PropTypes from 'prop-types';
 
 const DropdownMobile = ({ options, placeholder, selectedID, selectedName, onChange }) => (
   <div className="Dropdown__wrap">
@@ -10,7 +11,7 @@ const DropdownMobile = ({ options, placeholder, selectedID, selectedName, onChan
             'Dropdown-input__placeholder_open': !!selectedID
           })}
         >{placeholder}</div>
-        { selectedName }
+        <div className="Dropdown-select__value">{ selectedName }</div>
       </div>
 
       <select
@@ -33,5 +34,22 @@ const DropdownMobile = ({ options, placeholder, selectedID, selectedName, onChan
   </div>
 
 );
+
+DropdownMobile.propTypes = {
+  options: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired
+  })),
+  placeholder: PropTypes.string.isRequired,
+  selectedID: PropTypes.string,
+  selectedName: PropTypes.string,
+  onChange: PropTypes.func.isRequired,
+};
+
+DropdownMobile.defaultProps = {
+  options: null,
+  selectedID: null,
+  selectedName: null
+};
 
 export default DropdownMobile;

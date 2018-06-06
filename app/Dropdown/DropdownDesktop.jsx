@@ -4,6 +4,7 @@ import classnames from 'classnames';
 import DropdownList from './DropdownList';
 import ReactDOM from 'react-dom';
 import { getFilteredList } from './dropdownHelpers';
+import PropTypes from 'prop-types';
 
 class DropdownDesktop extends React.Component {
 
@@ -11,10 +12,10 @@ class DropdownDesktop extends React.Component {
     super(props);
     this.state = {
       inputValue: '',
-      listShown: false,
+      isOpen: false,
       isReverse: false,
       list: props.options,
-      cursor: null,
+      activeOption: null,
       listPixelSize: 0
     };
     this.closeTimeOut = null;
@@ -24,6 +25,7 @@ class DropdownDesktop extends React.Component {
     this.listItemsRef = {}
   }
 
+  // we updating size of select after mount and after options change
   componentDidMount() {
     if (this.props.options) this.setListPixelSize(this.props.options);
   }
@@ -38,50 +40,61 @@ class DropdownDesktop extends React.Component {
     const div = document.createElement('div');
     div.classList.add('hidden-container');
     let listRef = null;
-    ReactDOM.render(<DropdownList isOpen list={list} listRef={node => listRef = node} />, div, () => {
-      document.body.appendChild(div);
-      this.setState({ listPixelSize: listRef.clientHeight });
-      document.body.removeChild(div);
-    });
+    // render DropdownList to get it size
+    ReactDOM.render(
+      <DropdownList
+        setActiveOption={() => {}}
+        listItemRef={() => {}}
+        onSelect={()=>{}}
+        isOpen
+        list={list}
+        listRef={node => listRef = node}
+      />, div, () => {
+        document.body.appendChild(div);
+        this.setState({ listPixelSize: listRef.clientHeight });
+        document.body.removeChild(div);
+      });
   };
 
   checkAvailablePlace = () => {
+    // check: is there enough room for a list of options?
     const height = this.state.listPixelSize;
     const screenTop = this.containerRef.getBoundingClientRect().bottom + (window.scrollY || window.pageYOffset);
-    return (window.innerHeight - screenTop) < height;
+    return (window.innerHeight - screenTop) > height;
   };
 
   onInputChange = ({ target }) => {
     this.setState({
       inputValue: target.value,
       list: getFilteredList(this.props.options, target.value),
-      cursor: null
+      activeOption: null
     })
   };
 
-  onInputFocus = () => {
+  showOptionList = () => {
     clearTimeout(this.closeTimeOut);
-    if (!this.state.listShown) {
-      const isReverse = this.checkAvailablePlace();
+    if (!this.state.isOpen) {
+      const isReverse = !this.checkAvailablePlace();
       this.setState({
         inputValue: '',
-        listShown: true,
+        isOpen: true,
         list: this.props.options,
-        cursor: null,
         isReverse
       })
     }
   };
 
   onInputBlur = () => {
-    this.closeTimeOut = setTimeout(() => this.closeList(), 50);
+    // close if next focus will not at current dropdown
+    this.closeTimeOut = setTimeout(() => this.closeList(), 0);
   };
 
   closeList = () => {
     clearTimeout(this.closeTimeOut);
     this.setState({
-      listShown: false,
-      cursor: null,
+      isOpen: false,
+      activeOption: null,
+      list: this.props.options,
       inputValue: this.props.selectedName
     })
   };
@@ -89,73 +102,82 @@ class DropdownDesktop extends React.Component {
   onSelect = (id, name) => {
     this.setState({
       inputValue: name,
-      cursor: null,
-      listShown: false
+      activeOption: null,
+      isOpen: false
     });
     this.props.onChange(id, name);
   };
 
-  onChangeCursor = (i) => {
-    this.setState({ cursor: i })
+  setActiveOption = (activeOption) => {
+    this.setState({ activeOption })
   };
 
-  scrollIfNeeded = (nextCursor) => {
+  scrollIfNeeded = ({ id }) => {
+    // check that active option is visible now, and scroll to it if that`s wrong
     const dropdownNode = this.listRef;
     if (!this.listRef) return;
-    const { id } = this.state.list[nextCursor];
     const focusedItemNode = this.listItemsRef[id];
     const scrollTop = dropdownNode.scrollTop;
     const scrollBottom = scrollTop + dropdownNode.offsetHeight;
     const optionTop = focusedItemNode.offsetTop;
     const optionBottom = optionTop + focusedItemNode.offsetHeight;
-    if (scrollTop > optionTop || scrollBottom < optionBottom) {
+    if (scrollTop > optionTop) {
       dropdownNode.scrollTop = focusedItemNode.offsetTop;
+    } else if(scrollBottom < optionBottom) {
+      dropdownNode.scrollTop = optionBottom - dropdownNode.offsetHeight
     }
   };
 
-  updateCursor = (keyCode) => {
-    const { cursor, list } = this.state;
-    let nextCursor = 0;
-    if (cursor === null) {
-      nextCursor = 0
-    } else if (keyCode === 38 && cursor > 0) {
-      nextCursor = cursor - 1;
-    } else if (keyCode === 40 && cursor < list.length - 1) {
-      nextCursor = cursor + 1;
+  updateActiveOption = (keyCode) => {
+    // update current active option after keyboard arrows press
+    const { list, activeOption } = this.state;
+    let nextActiveOption = null;
+    const activeIndex = activeOption ? list.findIndex(({ id }) => id === activeOption.id) : -1;
+    if (activeIndex < 0) {
+      nextActiveOption = list[0];
+    } else if (keyCode === 38) {
+      nextActiveOption = activeIndex <= 0 ? list[list.length - 1] : list[activeIndex - 1];
+    } else if (keyCode === 40) {
+      nextActiveOption = activeIndex >= list.length - 1 ? list[0] : list[activeIndex + 1];
     }
-    this.setState({ cursor: nextCursor });
-    if (nextCursor !== null) this.scrollIfNeeded(nextCursor);
+    this.setActiveOption(nextActiveOption);
+    if (nextActiveOption) this.scrollIfNeeded(nextActiveOption);
   };
 
   onEnter = () => {
-    const { cursor, list } = this.state;
-    if (cursor !== null) {
-      const { id, name } = list[cursor];
+    const { activeOption } = this.state;
+    // select active option after keyboard enter press
+    if (activeOption) {
+      const { id, name } = activeOption;
       this.onSelect(id, name)
     }
   };
 
   onKeyDown = ({ keyCode }) => {
-    if (!this.state.listShown) {
-      this.onInputFocus();
+    if (!this.state.isOpen) {
+      // show list option if we have focus on dropdown, but list is hidden (after selecting option)
+      this.showOptionList();
     }
     if (keyCode === 38 || keyCode === 40) {
+      // set focus to dropdown container on arrow up/down keys
       this.containerRef.focus();
-      this.updateCursor(keyCode);
+      this.updateActiveOption(keyCode);
     } else if (keyCode === 13) {
       this.onEnter();
     } else if (keyCode !== 9) {
+      // set focus to input if it`s not arrows/enter or tab
       this.inputRef.focus();
     }
   };
 
   onArrowClick = (e) => {
-    if (!this.state.listShown) {
+    if (!this.state.isOpen) {
       this.inputRef.focus();
     } else {
       this.containerRef.focus();
       this.closeList();
     }
+    // preventing focus event after arrow click and make focus manually for change event order
     e.stopPropagation();
     e.preventDefault();
   };
@@ -168,12 +190,12 @@ class DropdownDesktop extends React.Component {
     return (
       <div
         className={classnames('Dropdown__wrap', {
-          'Dropdown__wrap_open': this.state.listShown,
-          'Dropdown__wrap_reverse': this.state.listShown && this.state.isReverse
+          'Dropdown__wrap_open': this.state.isOpen,
+          'Dropdown__wrap_reverse': this.state.isOpen && this.state.isReverse
         })}
         tabIndex={0}
         ref={containerRef => this.containerRef = containerRef}
-        onFocus={this.onInputFocus}
+        onFocus={this.showOptionList}
         onBlur={this.onInputBlur}
         onKeyDown={this.onKeyDown}
 
@@ -181,7 +203,7 @@ class DropdownDesktop extends React.Component {
         <label className="Dropdown-input">
           <div
             className={classnames('Dropdown-input__placeholder', {
-              'Dropdown-input__placeholder_open': this.state.listShown || this.state.inputValue
+              'Dropdown-input__placeholder_open': this.state.isOpen || this.state.inputValue
             })}
           >{ placeholder }</div>
           <input
@@ -194,19 +216,19 @@ class DropdownDesktop extends React.Component {
         </label>
         {
           <DropdownList
-            isOpen={this.state.listShown}
+            isOpen={this.state.isOpen}
             listRef={(node) => this.listRef = node}
             listItemRef={this.getItemRefs}
             currentTextValue={this.state.inputValue}
             onSelect={this.onSelect}
             list={list}
-            cursor={this.state.cursor}
-            onChangeCursor={this.onChangeCursor}
+            activeOption={this.state.activeOption}
+            setActiveOption={this.setActiveOption}
           />
         }
         <div
           className={classnames('Dropdown__arrow', {
-            'Dropdown__arrow_reverse': this.state.listShown && this.state.isReverse
+            'Dropdown__arrow_reverse': this.state.isOpen && this.state.isReverse
           })}
           onMouseDown={this.onArrowClick}
         />
@@ -214,5 +236,20 @@ class DropdownDesktop extends React.Component {
     );
   }
 }
+
+DropdownDesktop.propTypes = {
+  selectedName: PropTypes.string,
+  selectedID: PropTypes.string,
+  options: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired
+  }))
+};
+
+DropdownDesktop.defaultProps = {
+  selectedName: null,
+  selectedID: null,
+  options: null
+};
 
 export default DropdownDesktop;

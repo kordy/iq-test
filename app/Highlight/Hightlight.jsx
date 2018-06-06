@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const Highlight = ({ text, textToHighlight, highlightClassName = 'Highlight' }) => {
   if (!textToHighlight || !text) return text || null;
@@ -10,6 +11,18 @@ const Highlight = ({ text, textToHighlight, highlightClassName = 'Highlight' }) 
       </span>
     )
   )
+};
+
+Highlight.propTypes = {
+  highlightClassName: PropTypes.string,
+  textToHighlight: PropTypes.string,
+  text: PropTypes.string
+};
+
+Highlight.defaultProps = {
+  highlightClassName: null,
+  textToHighlight: null,
+  text: null
 };
 
 export default Highlight;

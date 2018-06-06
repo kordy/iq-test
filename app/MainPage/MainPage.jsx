@@ -7,14 +7,14 @@ const MainPage = () => (
   <div className="MainPage">
     <div className="MainPage__part">
       <div className="MainPage__logo">
-        <img src={logo} />
-        <h1 className="h1">Компонент дропдаун</h1>
+        {/*<img src={logo} />*/}
+        {/*<h1 className="h1">Компонент дропдаун</h1>*/}
       </div>
-      <h2 className="h2">Дропдаун с местом для выпадения вниз</h2>
+      {/*<h2 className="h2">Дропдаун с местом для выпадения вниз</h2>*/}
       <CountrySelectContainer />
     </div>
     <div className="MainPage__part">
-      <h2 className="h2">Дропдаун без места для выпадения вниз</h2>
+      {/*<h2 className="h2">Дропдаун без места для выпадения вниз</h2>*/}
       <CountrySelectContainer />
     </div>
   </div>

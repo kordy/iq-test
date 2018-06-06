@@ -3,6 +3,7 @@ import React from 'react';
 import { fetchCountries, setCountry } from './countrySelectActions';
 import { getSortedCountries, getIsFetched } from './countrySelectSelector';
 import Dropdown from '../Dropdown/Dropdown.jsx';
+import PropTypes from 'prop-types';
 
 function mapStateToProps(state) {
   return {
@@ -32,5 +33,10 @@ class CountrySelectContainer extends React.PureComponent {
     return this.props.isFetched ? <Dropdown {...this.props} placeholder="Выберите страну" /> : null
   }
 }
+
+CountrySelectContainer.propTypes = {
+    fetchCountries: PropTypes.func.isRequired,
+    isFetched: PropTypes.bool.isRequired
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(CountrySelectContainer);

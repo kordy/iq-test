@@ -1,7 +1,7 @@
-$borderColor = #b6b8bf;
-$backgroundColor = #fff;
-$activeColor = #ff8e2d;
-$arrowColor = #82848e;
+$borderColor = #b6b8bf
+$backgroundColor = #fff
+$activeColor = #ff8e2d
+$arrowColor = #82848e
 
 .Dropdown
   position relative
@@ -20,7 +20,7 @@ $arrowColor = #82848e;
         border-top-color $backgroundColor
         border-bottom-color $borderColor
   &__arrow
-    position:absolute
+    position absolute
     top 0
     right 0
     width 30px
@@ -48,9 +48,10 @@ $arrowColor = #82848e;
     opacity 0
     z-index 1
   &__value
-    padding 15px 30px 15px 15px
     display block
-    line-height: 20px;
+    overflow hidden
+    text-overflow ellipsis
+    white-space nowrap
 
 .Dropdown-input
   padding 15px 30px 15px 15px
@@ -98,24 +99,24 @@ $arrowColor = #82848e;
   overflow auto
   z-index 2
   bottom auto
-  top: calc(100% - 1px)
+  top calc(100% - 1px)
   display none
   &_open
     display block
   .Dropdown__wrap_reverse &
     border-radius 3px 3px 0 0
     top auto
-    bottom: calc(100% - 1px)
+    bottom calc(100% - 1px)
 
   &__item
     padding 18px 15px
     cursor pointer
     &_empty
-      color: #999
+      color #999
       cursor default
     &_active
       color $activeColor
   &__highlighted
-    color: $activeColor
+    color $activeColor
     text-decoration underline
 
