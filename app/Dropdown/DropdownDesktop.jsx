@@ -30,9 +30,10 @@ class DropdownDesktop extends React.Component {
     if (this.props.options) this.setListPixelSize(this.props.options);
   }
 
-  componentDidUpdate(prevProps) {
-    if (prevProps.options !== this.props.options) {
-      this.setListPixelSize(this.props.options);
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.options !== this.props.options) {
+      if (nextProps.options) this.setListPixelSize(nextProps.options);
+      this.setState({ list: getFilteredList(nextProps.options, this.state.inputValue) });
     }
   }
 
@@ -164,8 +165,12 @@ class DropdownDesktop extends React.Component {
       this.updateActiveOption(keyCode);
     } else if (keyCode === 13) {
       this.onEnter();
-    } else if (keyCode !== 9) {
-      // set focus to input if it`s not arrows/enter or tab
+    } else if (
+      (keyCode >= 48 && keyCode <= 90) ||
+      (keyCode >= 186 && keyCode <= 222) ||
+      (keyCode >= 96 && keyCode <= 105)
+    ) {
+      // set focus to input if user start typing
       this.inputRef.focus();
     }
   };
@@ -203,7 +208,7 @@ class DropdownDesktop extends React.Component {
         <label className="Dropdown-input">
           <div
             className={classnames('Dropdown-input__placeholder', {
-              'Dropdown-input__placeholder_open': this.state.isOpen || this.state.inputValue
+              'Dropdown-input__placeholder_open': this.state.isOpen || this.state.inputValue || this.props.selectedID
             })}
           >{ placeholder }</div>
           <input
