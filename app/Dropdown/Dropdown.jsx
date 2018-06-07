@@ -32,7 +32,7 @@ class Dropdown extends React.Component {
 
     return (
       <div className="Dropdown">
-        { !isMobile ? <DropdownDesktop {...propsToPass} /> : <DropdownMobile {...propsToPass} /> }
+        { true || !isMobile ? <DropdownDesktop {...propsToPass} /> : <DropdownMobile {...propsToPass} /> }
       </div>
     );
   }
