@@ -7,31 +7,11 @@ import PropTypes from 'prop-types';
 class Dropdown extends React.Component {
   constructor(props) {
     super(props);
-
     this.state = {
       selectedID: null,
       selectedName: '',
-      isSetInitialValue: false
     };
-  };
-
-  componentDidMount() {
-    if (this.props.initialValue) this.setInitialOption();
-  };
-
-  componentDidUpdate() {
-    if (!this.state.isSetInitialValue) this.setInitialOption();
-  };
-
-  setInitialOption = () => {
-    const { initialValue, options } = this.props;
-    const { isSetInitialValue } = this.state;
-    if (initialValue && !isSetInitialValue && options && options.length) {
-      const selected = options.find(({ id }) => id === initialValue);
-      this.setState({ isSetInitialValue: true });
-      if (selected) this.onChange(selected.id, selected.name);
-    }
-  };
+  }
 
   onChange = (id, name) => {
     this.setState({
@@ -52,7 +32,7 @@ class Dropdown extends React.Component {
 
     return (
       <div className="Dropdown">
-        { true || !isMobile ? <DropdownDesktop {...propsToPass} /> : <DropdownMobile {...propsToPass} /> }
+        { !isMobile ? <DropdownDesktop {...propsToPass} /> : <DropdownMobile {...propsToPass} /> }
       </div>
     );
   }
