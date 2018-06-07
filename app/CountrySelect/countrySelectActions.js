@@ -20,7 +20,7 @@ const receiveCountries = data => {
 export const fetchCountries = () => {
   return dispatch => {
     dispatch(requestCountries());
-    return new Promise(resolve => resolve(countries))
+    return new Promise(resolve => setTimeout(() => resolve(countries), 1000))
       .then(data => dispatch(receiveCountries(data)))
   }
 };

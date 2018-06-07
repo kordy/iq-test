@@ -8,14 +8,14 @@ class Dropdown extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedID: null,
+      selectedId: null,
       selectedName: '',
     };
   }
 
   onChange = (id, name) => {
     this.setState({
-      selectedID: id,
+      selectedId: id,
       selectedName: name
     });
     if (this.props.onChange) this.props.onChange(id, name);
@@ -26,7 +26,7 @@ class Dropdown extends React.Component {
     const propsToPass = {
       ...props,
       onChange: this.onChange,
-      selectedID: this.state.selectedID,
+      selectedId: this.state.selectedId,
       selectedName: this.state.selectedName
     };
 

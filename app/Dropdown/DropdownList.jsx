@@ -3,10 +3,10 @@ import DropdownListItem from './DropdownListItem';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
-const DropdownList = ({ list, currentTextValue, onSelect, listRef, listItemRef, isOpen, activeOption, setActiveOption }) => (
-    <div ref={listRef} className={classnames('Dropdown-list', { 'Dropdown-list_open': isOpen })}>
+const DropdownList = ({ list, currentTextValue, onSelect, listRef, listItemRef, isOpen, activeOption, setActiveOption, isPending }) => (
+    <div ref={listRef} className={classnames('Dropdown-list', { 'Dropdown-list_open': isOpen, 'Dropdown-list_loading': isPending })}>
       {
-        list.length ? list.map((item) => (
+        !isPending && (list.length ? list.map((item) => (
           <DropdownListItem
             key={item.id}
             item={item}
@@ -16,7 +16,7 @@ const DropdownList = ({ list, currentTextValue, onSelect, listRef, listItemRef, 
             currentTextValue={currentTextValue}
             setActiveOption={setActiveOption}
           />
-        )) : <div className="Dropdown-list__item Dropdown-list__item_empty">Результатов не найдено</div>
+        )) : <div className="Dropdown-list__item Dropdown-list__item_empty">Результатов не найдено</div>)
       }
   </div>
 );
@@ -32,6 +32,7 @@ DropdownList.propTypes = {
   setActiveOption: PropTypes.func.isRequired,
   listRef: PropTypes.func.isRequired,
   listItemRef: PropTypes.func.isRequired,
+  isPending: PropTypes.bool.isRequired,
   isOpen: PropTypes.bool.isRequired
 };
 

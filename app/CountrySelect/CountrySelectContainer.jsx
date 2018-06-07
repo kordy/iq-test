@@ -1,27 +1,22 @@
 import { connect } from 'react-redux';
 import React from 'react';
 import { fetchCountries, setCountry } from './countrySelectActions';
-import { getSortedCountries } from './countrySelectSelector';
+import { getSortedCountries, getIsPending } from './countrySelectSelector';
 import Dropdown from '../Dropdown/Dropdown.jsx';
 import PropTypes from 'prop-types';
 
 function mapStateToProps(state) {
   return {
     isMobile: state.isMobile,
-    options: getSortedCountries(state)
+    options: getSortedCountries(state),
+    isPending: getIsPending(state)
   };
 }
 
-function mapDispatchToProps(dispatch) {
-  return {
-    fetchCountries() {
-      dispatch(fetchCountries());
-    },
-    onChange(id) {
-      dispatch(setCountry(id));
-    }
-  };
-}
+const mapDispatchToProps = {
+  fetchCountries,
+  onChange: setCountry
+};
 
 class CountrySelectContainer extends React.PureComponent {
   componentDidMount() {
@@ -29,7 +24,8 @@ class CountrySelectContainer extends React.PureComponent {
   }
 
   render() {
-    return <Dropdown {...this.props} placeholder="Выберите страну" />
+    const { isMobile, options, isPending } = this.props;
+    return <Dropdown isMobile={isMobile} options={options} isPending={isPending} placeholder="Выберите страну" />
   }
 }
 

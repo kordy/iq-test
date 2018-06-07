@@ -37,6 +37,12 @@ class DropdownDesktop extends React.Component {
     }
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.isOpen && prevState.listPixelSize !== this.state.listPixelSize) {
+      this.setState({ isReverse: !this.checkAvailablePlace() });
+    }
+  }
+
   setListPixelSize = (list) => {
     const div = document.createElement('div');
     div.classList.add('hidden-container');
@@ -48,6 +54,7 @@ class DropdownDesktop extends React.Component {
         listItemRef={() => {}}
         onSelect={()=>{}}
         isOpen
+        isPending={false}
         list={list}
         listRef={node => listRef = node}
       />, div, () => {
@@ -208,7 +215,7 @@ class DropdownDesktop extends React.Component {
         <label className="Dropdown-input">
           <div
             className={classnames('Dropdown-input__placeholder', {
-              'Dropdown-input__placeholder_open': this.state.isOpen || this.state.inputValue || this.props.selectedID
+              'Dropdown-input__placeholder_open': this.state.isOpen || this.state.inputValue || this.props.selectedId
             })}
           >{ placeholder }</div>
           <input
@@ -222,6 +229,7 @@ class DropdownDesktop extends React.Component {
         {
           <DropdownList
             isOpen={this.state.isOpen}
+            isPending={this.props.isPending}
             listRef={(node) => this.listRef = node}
             listItemRef={this.getItemRefs}
             currentTextValue={this.state.inputValue}
@@ -244,7 +252,8 @@ class DropdownDesktop extends React.Component {
 
 DropdownDesktop.propTypes = {
   selectedName: PropTypes.string,
-  selectedID: PropTypes.string,
+  selectedId: PropTypes.string,
+  isPending: PropTypes.bool.isRequired,
   options: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired
@@ -253,7 +262,7 @@ DropdownDesktop.propTypes = {
 
 DropdownDesktop.defaultProps = {
   selectedName: null,
-  selectedID: null,
+  selectedId: null,
   options: null
 };
 

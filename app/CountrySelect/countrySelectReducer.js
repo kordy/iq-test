@@ -1,4 +1,5 @@
 import * as actionTypes from './countrySelectActions';
+import createReducer from '../createReducer';
 
 const INITIAL_STATE = {
   data: [],
@@ -6,10 +7,7 @@ const INITIAL_STATE = {
   isFetched: false
 };
 
-export default function (state = INITIAL_STATE, action = {}) {
-  switch (action.type) {
-    case actionTypes.COUNTRIES_REQUEST: return { ...state, isPending: true };
-    case actionTypes.COUNTRIES_SUCCESS: return { data: action.data, isFetched: true, isPending: false };
-    default: return state;
-  }
-}
+export default createReducer({
+  [actionTypes.COUNTRIES_REQUEST]: (state) => ({ ...state, isPending: true }),
+  [actionTypes.COUNTRIES_SUCCESS]: (state, { data }) => ({ data, isFetched: true, isPending: false }),
+}, INITIAL_STATE)
