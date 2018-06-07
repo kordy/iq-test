@@ -10,9 +10,14 @@ if (process.env.NODE_ENV === 'development' && module.hot) {
   whyDidYouUpdate(React);
 }
 
-ReactDom.render(
+const ready = () => {
+  ReactDom.render(
     <Provider store={store}>
-        <MainPage />
+      <MainPage />
     </Provider>,
     document.getElementById('app')
-);
+  );
+};
+
+document.addEventListener("DOMContentLoaded", ready);
+

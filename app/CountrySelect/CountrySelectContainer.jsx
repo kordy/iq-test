@@ -1,15 +1,14 @@
 import { connect } from 'react-redux';
 import React from 'react';
 import { fetchCountries, setCountry } from './countrySelectActions';
-import { getSortedCountries, getIsFetched } from './countrySelectSelector';
+import { getSortedCountries } from './countrySelectSelector';
 import Dropdown from '../Dropdown/Dropdown.jsx';
 import PropTypes from 'prop-types';
 
 function mapStateToProps(state) {
   return {
     isMobile: state.isMobile,
-    options: getSortedCountries(state),
-    isFetched: getIsFetched(state)
+    options: getSortedCountries(state)
   };
 }
 
@@ -30,13 +29,12 @@ class CountrySelectContainer extends React.PureComponent {
   }
 
   render() {
-    return this.props.isFetched ? <Dropdown {...this.props} placeholder="Выберите страну" /> : null
+    return <Dropdown {...this.props} placeholder="Выберите страну" />
   }
 }
 
 CountrySelectContainer.propTypes = {
-    fetchCountries: PropTypes.func.isRequired,
-    isFetched: PropTypes.bool.isRequired
+    fetchCountries: PropTypes.func.isRequired
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(CountrySelectContainer);

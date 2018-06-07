@@ -30,9 +30,10 @@ class DropdownDesktop extends React.Component {
     if (this.props.options) this.setListPixelSize(this.props.options);
   }
 
-  componentDidUpdate(prevProps) {
-    if (prevProps.options !== this.props.options) {
-      this.setListPixelSize(this.props.options);
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.options !== this.props.options) {
+      if (nextProps.options) this.setListPixelSize(nextProps.options);
+      this.setState({ list: getFilteredList(nextProps.options, this.state.inputValue) });
     }
   }
 
