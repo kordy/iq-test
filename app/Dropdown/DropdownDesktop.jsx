@@ -54,7 +54,6 @@ class DropdownDesktop extends React.Component {
         listItemRef={() => {}}
         onSelect={()=>{}}
         isOpen
-        isPending={false}
         list={list}
         listRef={node => listRef = node}
       />, div, () => {
@@ -253,7 +252,7 @@ class DropdownDesktop extends React.Component {
 DropdownDesktop.propTypes = {
   selectedName: PropTypes.string,
   selectedId: PropTypes.string,
-  isPending: PropTypes.bool.isRequired,
+  isPending: PropTypes.bool,
   options: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired
@@ -261,6 +260,7 @@ DropdownDesktop.propTypes = {
 };
 
 DropdownDesktop.defaultProps = {
+  isPending: false,
   selectedName: null,
   selectedId: null,
   options: null

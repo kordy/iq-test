@@ -32,12 +32,13 @@ DropdownList.propTypes = {
   setActiveOption: PropTypes.func.isRequired,
   listRef: PropTypes.func.isRequired,
   listItemRef: PropTypes.func.isRequired,
-  isPending: PropTypes.bool.isRequired,
+  isPending: PropTypes.bool,
   isOpen: PropTypes.bool.isRequired
 };
 
 DropdownList.defaultProps = {
   list: [],
+  isPending: false,
   activeOption: null,
   currentTextValue: ''
 };

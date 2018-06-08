@@ -40,7 +40,7 @@ DropdownMobile.propTypes = {
     name: PropTypes.string.isRequired
   })),
   placeholder: PropTypes.string.isRequired,
-  isPending: PropTypes.bool.isRequired,
+  isPending: PropTypes.bool,
   selectedId: PropTypes.string,
   selectedName: PropTypes.string,
   onChange: PropTypes.func.isRequired,
@@ -48,6 +48,7 @@ DropdownMobile.propTypes = {
 
 DropdownMobile.defaultProps = {
   options: null,
+  isPending: false,
   selectedId: null,
   selectedName: null
 };
